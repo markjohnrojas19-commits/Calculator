@@ -1,6 +1,8 @@
 let operator = "";
 let operand1 = "";
 let operand2 = "";
+let buttons = document.getElementById("buttons");
+let display = document.getElementById("display");
 
 function add(operand1, operand2) {
   return operand1 + operand2;
@@ -19,24 +21,28 @@ function divide(operand1, operand2) {
 }
 
 function operate(operator, num1, num2) {
+  let n1 = Number(num1);
+  let n2 = Number(num2);
+
   if (operator === "+") {
-    return add(num1, num2);
+    let output = add(n1, n2);
+    return String(output);
   } else if (operator === "-") {
-    return subtract(num1, num2);
+    let output = subtract(n1, n2);
+    return String(output);
   } else if (operator === "*") {
-    return multiply(num1, num2);
+    let output = multiply(n1, n2);
+    return String(output);
   } else if (operator === "/") {
-    if (num2 === 0) return "Error";
-    return divide(num1, num2);
+    if (n2 === 0) return "Error";
+    let output = divide(n1, n2);
+    return String(output);
   } else {
-    return null;
+    return (output = null);
   }
 }
 
 function updateVariables() {
-  let buttons = document.getElementById("buttons");
-  let display = document.getElementById("display");
-
   buttons.addEventListener("click", (event) => {
     let target = event.target;
     if (target.tagName !== "BUTTON") return;
@@ -77,7 +83,6 @@ function updateVariables() {
         break;
     }
 
-    // This keeps operand1 on the screen safely
     display.textContent = operand1;
 
     if (operator !== "") {
@@ -95,7 +100,6 @@ function updateVariables() {
         case "9":
         case "0":
           if (operator !== "") {
-            // ADJUSTMENT: If this is the FIRST click for operand2, flash a "0" string
             if (operand2 === "") {
               display.textContent = "0";
             }
@@ -104,12 +108,34 @@ function updateVariables() {
           break;
       }
 
-      // If operand2 has a value, show it on the screen instead of operand1
       if (operand2 !== "") {
         display.textContent = operand2;
       }
     }
+
+    if (target.id === "clear") {
+      operand1 = "";
+      operand2 = "";
+      operator = "";
+      display.textContent = "0";
+    }
+  });
+}
+
+function equalOperation() {
+  let equal = document.getElementById("=");
+
+  equal.addEventListener("click", (event) => {
+    let result = operate(operator, operand1, operand2);
+
+    display.textContent = result;
+
+    operand1 = result;
+
+    operator = "";
+    operand2 = "";
   });
 }
 
 updateVariables();
+equalOperation();

@@ -3,6 +3,7 @@ let operand1 = "";
 let operand2 = "";
 let buttons = document.getElementById("buttons");
 let display = document.getElementById("display");
+let backSpace = document.getElementById("Del");
 
 function add(operand1, operand2) {
   return operand1 + operand2;
@@ -46,6 +47,7 @@ function updateVariables() {
   buttons.addEventListener("click", (event) => {
     let target = event.target;
     if (target.tagName !== "BUTTON") return;
+    if (target.id === "equal" || target.id === "equals") return;
 
     switch (target.id) {
       case "1":
@@ -62,7 +64,31 @@ function updateVariables() {
           operand1 += target.id;
         }
         break;
+      case ".":
+        if (operator === "" && !operand1.includes(".")) {
+          // If operand1 is empty when clicking dot, turn it into "0."
+          if (operand1 === "") {
+            operand1 = "0";
+          }
+          operand1 += target.id;
+        }
+        break;
+
       default:
+        if (
+          target.id === "+" ||
+          target.id === "-" ||
+          target.id === "/" ||
+          target.id === "*"
+        ) {
+          if (operand1 !== "" && operator !== "" && operand2 !== "") {
+            let result = operate(operator, operand1, operand2);
+            operand1 = result;
+            operand2 = "";
+            operator = target.id;
+          }
+        }
+
         if (target.id === "+") {
           if (operator === "") {
             operator += target.id;
@@ -106,6 +132,15 @@ function updateVariables() {
             operand2 += target.id;
           }
           break;
+        case ".":
+          if (operator !== "" && !operand2.includes(".")) {
+            // If operand2 is empty when clicking dot, turn it into "0."
+            if (operand2 === "") {
+              operand2 = "0";
+            }
+            operand2 += target.id;
+          }
+          break;
       }
 
       if (operand2 !== "") {
@@ -119,21 +154,39 @@ function updateVariables() {
       operator = "";
       display.textContent = "0";
     }
+
+    if (target.id === "Del") {
+      if (operand2 !== "") {
+        operand2 = operand2.slice(0, -1);
+        display.textContent = operand2 === "" ? "0" : operand2;
+      } else if (operator !== "") {
+        operator = operator.slice(0, -1);
+        display.textContent = operand1;
+      } else if (operand1 !== "") {
+        operand1 = operand1.slice(0, -1);
+        display.textContent = operand1 === "" ? "0" : operand1;
+      } else {
+        console.log("Calculation incomplete");
+        display.textContent = "ERROR";
+      }
+    }
   });
 }
 
 function equalOperation() {
-  let equal = document.getElementById("=");
+  let equal = document.getElementById("equal");
 
   equal.addEventListener("click", (event) => {
-    let result = operate(operator, operand1, operand2);
-
-    display.textContent = result;
-
-    operand1 = result;
-
-    operator = "";
-    operand2 = "";
+    if (operand1 !== "" && operator !== "" && operand2 !== "") {
+      let result = operate(operator, operand1, operand2);
+      display.textContent = result;
+      operand1 = result;
+      operator = "";
+      operand2 = "";
+    } else {
+      console.log("Calculation incomplete");
+      display.textContent = "ERROR";
+    }
   });
 }
 

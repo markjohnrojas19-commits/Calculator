@@ -1,0 +1,54 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+}
+
+#display {
+  padding-right: 12px;
+  box-sizing: border-box;
+  font-size: 30px;
+  border: 2px solid black;
+  border-radius: 5px;
+  width: 175px;
+  padding-left: 150px;
+}
+
+#buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 5px; /* Adds a beautiful 10px gap BOTH horizontally and vertically */
+  margin-top: 10px; /* Adds clean breathing room below your display box */
+}
+
+button {
+  width: 40px;
+  height: 40px;
+  border-radius: 5px;
+}
+
+#mainContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 200px;
+  height: 300px;
+  border: 2px solid black;
+  border-radius: 5px;
+}
+
+#clear,
+#equal {
+  width: 85px;
+}

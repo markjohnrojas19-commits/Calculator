@@ -49,6 +49,20 @@ function updateVariables() {
     if (target.tagName !== "BUTTON") return;
     if (target.id === "equal" || target.id === "equals") return;
 
+    if (target === backSpace || target.id === "Del") {
+      if (operand2 !== "") {
+        operand2 = operand2.slice(0, -1);
+        display.textContent = operand2 === "" ? "0" : operand2;
+      } else if (operator !== "") {
+        operator = operator.slice(0, -1);
+        display.textContent = operand1;
+      } else if (operand1 !== "") {
+        operand1 = operand1.slice(0, -1);
+        display.textContent = operand1 === "" ? "0" : operand1;
+      }
+      return;
+    }
+
     switch (target.id) {
       case "1":
       case "2":
@@ -60,20 +74,10 @@ function updateVariables() {
       case "8":
       case "9":
       case "0":
-        if (operator === "") {
+        if (operator === "" && operand1.length < 10) {
           operand1 += target.id;
         }
         break;
-      case ".":
-        if (operator === "" && !operand1.includes(".")) {
-          // If operand1 is empty when clicking dot, turn it into "0."
-          if (operand1 === "") {
-            operand1 = "0";
-          }
-          operand1 += target.id;
-        }
-        break;
-
       default:
         if (
           target.id === "+" ||
@@ -83,12 +87,17 @@ function updateVariables() {
         ) {
           if (operand1 !== "" && operator !== "" && operand2 !== "") {
             let result = operate(operator, operand1, operand2);
+
+            // FIX 1: Format chained calculation if it overflows 10 digits
+            if (result !== "Error" && result !== null && result.length > 10) {
+              result = String(Number(result).toExponential(4));
+            }
+
             operand1 = result;
             operand2 = "";
             operator = target.id;
           }
         }
-
         if (target.id === "+") {
           if (operator === "") {
             operator += target.id;
@@ -129,16 +138,9 @@ function updateVariables() {
             if (operand2 === "") {
               display.textContent = "0";
             }
-            operand2 += target.id;
-          }
-          break;
-        case ".":
-          if (operator !== "" && !operand2.includes(".")) {
-            // If operand2 is empty when clicking dot, turn it into "0."
-            if (operand2 === "") {
-              operand2 = "0";
+            if (operand2.length < 10) {
+              operand2 += target.id;
             }
-            operand2 += target.id;
           }
           break;
       }
@@ -154,22 +156,6 @@ function updateVariables() {
       operator = "";
       display.textContent = "0";
     }
-
-    if (target.id === "Del") {
-      if (operand2 !== "") {
-        operand2 = operand2.slice(0, -1);
-        display.textContent = operand2 === "" ? "0" : operand2;
-      } else if (operator !== "") {
-        operator = operator.slice(0, -1);
-        display.textContent = operand1;
-      } else if (operand1 !== "") {
-        operand1 = operand1.slice(0, -1);
-        display.textContent = operand1 === "" ? "0" : operand1;
-      } else {
-        console.log("Calculation incomplete");
-        display.textContent = "ERROR";
-      }
-    }
   });
 }
 
@@ -179,6 +165,12 @@ function equalOperation() {
   equal.addEventListener("click", (event) => {
     if (operand1 !== "" && operator !== "" && operand2 !== "") {
       let result = operate(operator, operand1, operand2);
+
+      // FIX 2: Format final calculation if it overflows 10 digits
+      if (result !== "Error" && result !== null && result.length > 10) {
+        result = String(Number(result).toExponential(4));
+      }
+
       display.textContent = result;
       operand1 = result;
       operator = "";
